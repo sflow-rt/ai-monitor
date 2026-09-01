@@ -1,0 +1,85 @@
+openapi: 3.2.0
+info:
+  title: AI Monitor
+  description: Detect and trace traffic congestion events.
+  contact:
+    name: sFlow-RT.com
+    url: https://sflow-rt.com/
+  version: 0.0.1
+paths:
+  /monitor.js/settings/json:
+    get:
+       summary: Get current settings
+       tags: [settings]
+       responses:
+         200:
+           description: OK
+           content:
+             application/json:
+               schema:
+                 $ref: '#/components/schemas/Settings'
+    put:
+       summary: Change settings
+       tags: [settings]
+       requestBody:
+         required: true
+         content:
+           application/json:
+             schema:
+                $ref: '#/components/schemas/Settings'
+       responses:
+        '204':
+          description: No content
+          content: {} 
+    post:
+       summary: Change settings
+       tags: [settings]
+       requestBody:
+         required: true
+         content:
+           application/json:
+             schema:
+                $ref: '#/components/schemas/Settings'
+       responses:
+         204:
+           description: No content
+           content: {}
+  /monitor.js/statistics/json:
+    get:
+       summary: Get event counts
+       tags: [statistics]
+       responses:
+         200:
+           description: OK
+           content: {}
+components:
+  schemas:
+    Settings:
+      description: Settings
+      type: object
+      properties:
+        smoothing_seconds:
+          description: Time window for flow smoothing (in seconds)
+          type: number
+          examples:
+            - 0.5
+        utilization_threshold:
+          description: Egress port utilization threshold (in %)
+          type: number
+          examples:
+            - 90
+        elephant_threshold:
+          description: Fraction of utilization threshold for elephant flow
+          type: number
+          examples:
+            - 0.2
+        top_k:
+          description: Number of flows to keep per port for tracing
+          type: number
+          examples:
+            - 5
+        port_Gbps:
+          description: Switch port speed (in Gbps)
+          type: number
+          examples:
+            - 400
