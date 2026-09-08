@@ -47,7 +47,7 @@ function initialize() {
     metric:'ai_monitor_egress_bytes',
     value:settings.port_Gbps * 1e9 * settings.utilization_threshold * 0.01 / 8,
     byFlow:true,
-    t:2
+    timeout:2
   });
 }
 
