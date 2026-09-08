@@ -94,9 +94,10 @@ setEventHandler((evt) => {
   // filter the flows by egress port
   // flowKey in the egress_bytes flow is the egress port
   var prefix = flowKey + ',';
-  // elephant is any flow responsible for 20% of bandwidth needed to cross threshold
+  // elephant is any flow above elephant_threshold of the utilized bandwidth
+  // (the bandwidth needed to cross the utilization threshold), not of the total link bandwidth
   var elephant_threshold = settings.elephant_threshold;
-  var elephants = flows.filter((el) => el.key.startsWith(prefix) && el.value >= elephant_threshold);
+  var elephants = flows.filter((el) => el.key.startsWith(prefix) && el.value >= elephant_threshold * threshold);
   // incast collisions involve more than 1 flow
   if(elephants.length > 1) {
      // strip off outputifindex prefix
