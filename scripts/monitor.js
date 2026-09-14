@@ -89,18 +89,15 @@ function reportIncastCollision(agent,ifindex,flows) {
 // handle ai_monitor_egress_utilization events
 setEventHandler((evt) => {
   var {agent, flowKey, threshold, value} = evt;
-  // get up to 100 flows larger than 1Mbps
-  var flows = activeFlows(agent,'ai_monitor_rocev2_egress',100,1e6);
-  // filter the flows by egress port
-  // flowKey in the egress_bytes flow is the egress port
-  var prefix = flowKey + ',';
   // elephant is any flow above elephant_threshold of the utilized bandwidth
   // (the bandwidth needed to cross the utilization threshold), not of the total link bandwidth
-  var elephant_threshold = settings.elephant_threshold;
-  var elephants = flows.filter((el) => el.key.startsWith(prefix) && el.value >= elephant_threshold * threshold);
+  var elephant_threshold = settings.elephant_threshold * threshold;
+  // get up to 100 flows larger than elephant_threshold with flowKey (egress port) as prefix
+  var elephants = activeFlows(agent,'ai_monitor_rocev2_egress',100,elephant_threshold,null,flowKey+((',').repeat(flow.length)));
   // incast collisions involve more than 1 flow
   if(elephants.length > 1) {
      // strip off outputifindex prefix
+     var prefix = flowKey + ',';
      var prefixLen = prefix.length;
      var elephantKeys = elephants.map((el) => el.key.substring(prefixLen));
 
