@@ -5,7 +5,7 @@ info:
   contact:
     name: sFlow-RT.com
     url: https://sflow-rt.com/
-  version: 0.0.1
+  version: 0.0.2
 paths:
   /monitor.js/settings/json:
     get:
@@ -62,22 +62,37 @@ components:
           description: Time window for flow smoothing (in seconds)
           type: number
           examples:
-            - 0.5
+            - 2
         utilization_threshold:
           description: Egress port utilization threshold (in %)
           type: number
           examples:
-            - 90
+            - 80
+        utilization_timeout:
+          description: Time below threshold before retriggering (in seconds)
+          type: number
+          examples:
+            - 10
         elephant_threshold:
           description: Fraction of utilization threshold for elephant flow
           type: number
           examples:
             - 0.2
+        subflows_per_elephant:
+          description: Number of full detail flows to consider as part of elephant
+          type: number
+          examples:
+            - 8
+        trace_flows:
+          description: Trace full detail flow paths across fabric
+          type: boolean
+          examples:
+            - false
         top_k:
           description: Number of flows to keep per port for tracing
           type: number
           examples:
-            - 5
+            - 20
         port_Gbps:
           description: Switch port speed (in Gbps)
           type: number
