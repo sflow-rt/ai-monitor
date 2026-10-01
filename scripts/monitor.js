@@ -109,6 +109,7 @@ function reportIncastCollision(agent, ifindex, flows, value, elephant_threshold)
 setEventHandler((evt) => {
     var {agent, flowKey, threshold, value} = evt;
     // flowKey is egress port, test to see if it is a host port
+     if (topologyInterfaceLinked(agent, flowKey)) {
         // currently only looking for incast congestion to host port
         return;
     }
