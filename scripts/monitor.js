@@ -76,13 +76,20 @@ function reportIncastCollision(agent, ifindex, flows, value, elephant_threshold)
         report.node = res.node;
         report.port = res.port;
     }
+    var destinations = new Set();
     flows.forEach((flow) => {
         var [ipsource, ipdestination] = flow.key.split(',');
-        report.destination = ipdestination;
+        destinations.add(ipdestination);
         var srcRec = {source: ipsource, bps: flow.value * 8};
         report.sources.push(srcRec);
     });
-    var traceFlows = activeFlows(agent, 'ai_monitor_trace_ingress', 100, elephant_threshold / settings.subflows_per_elephant, 'max', ',' + report.destination + (','.repeat(traceKeys.length)));
+    // should only be one IP address per host port
+    if (destinations.size !== 1) {
+        return;
+    }
+    // set destination
+    report.destination = destinations.values().next().value;
+    var traceFlows = activeFlows(agent, 'ai_monitor_trace_ingress', 100, elephant_threshold / settings.subflows_per_elephant, 'max', ',' + report.destination);
     report.flows.full = traceFlows.length;
     if (settings.trace_flows) {
         report.paths = [];
@@ -101,11 +108,16 @@ function reportIncastCollision(agent, ifindex, flows, value, elephant_threshold)
 // handle ai_monitor_egress_utilization events
 setEventHandler((evt) => {
     var {agent, flowKey, threshold, value} = evt;
+    // flowKey is egress port, test to see if it is a host port
+        // currently only looking for incast congestion to host port
+        return;
+    }
+
     // elephant is any flow above elephant_threshold of the utilized bandwidth
     // (the bandwidth needed to cross the utilization threshold), not of the total link bandwidth
     var elephant_threshold = settings.elephant_threshold * threshold;
     // get up to 100 flows larger than elephant_threshold with flowKey (egress port) as prefix
-    var elephants = activeFlows(agent, 'ai_monitor_count_egress', 100, elephant_threshold, 'max', flowKey + (','.repeat(countFlow.length)));
+    var elephants = activeFlows(agent, 'ai_monitor_count_egress', 100, elephant_threshold, 'max', flowKey);
     // incast collisions involve more than 1 flow
     if (elephants.length > 1) {
         // strip off outputifindex prefix from keys and scale from bytes to bits per second
