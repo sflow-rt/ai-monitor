@@ -2,6 +2,8 @@
 
 Monitor AI / ML fabric for congestion events
 
+[Detecting incast congestion of RDMA flows](https://blog.sflow.com/2026/11/detecting-incast-congestion-of-rdma.html)
+
 ## To install
 
 1. [Download sFlow-RT](https://sflow-rt.com/download.php)
